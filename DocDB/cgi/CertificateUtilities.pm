@@ -46,6 +46,9 @@ sub FetchEmailUserIDByCert (%) {
   my $CertEmail = $ENV{SSL_CLIENT_S_DN_Email};
   my $CertCN    = $ENV{SSL_CLIENT_S_DN_CN};
   my $CertDN    = $ENV{SSL_CLIENT_S_DN};
+  
+  # XXX: EGI -> We don't want to search with DN but an UID.
+  # print $ENV{AUTHENTICATE_UID};
 
   # If we do http basic with users, this routine will function with minor modifications
 
@@ -56,7 +59,7 @@ sub FetchEmailUserIDByCert (%) {
     return;
   }
 
-  push @DebugStack, "Finding EmailUserID and groups by DN $CertDN";
+  push @DebugStack, "Finding EmailUserID and groups by UID $ENV{AUTHENTICATE_UID} or DN $CertDN";
   if ($IgnoreVerification) {
     $EmailUserSelect = $dbh->prepare("select EmailUserID from EmailUser ".
                    "where Username=?");
@@ -64,7 +67,9 @@ sub FetchEmailUserIDByCert (%) {
     $EmailUserSelect = $dbh->prepare("select EmailUserID from EmailUser ".
                    "where Verified=1 and Username=?");
   }
-  $EmailUserSelect -> execute($CertDN);
+
+  # XXX: EGI -> added ternary operator, was only CERTDN
+  $EmailUserSelect -> execute($ENV{AUTHENTICATE_UID} ? $ENV{AUTHENTICATE_UID} : $CertDN);
 
   my ($EmailUserID) = $EmailUserSelect -> fetchrow_array; 
   push @DebugStack,"Found e-mail user: $EmailUserID";
@@ -99,10 +104,12 @@ sub CertificateStatus () {
   } 
     
   my $EmailUserSelect;
-  push @DebugStack, "Finding status by DN $CertDN";
+  push @DebugStack, "Finding status by UID $ENV{AUTHENTICATE_UID} or  DN $CertDN";
   $EmailUserSelect = $dbh->prepare("select EmailUserID,Verified from EmailUser ".
                                      "where Username=?");
-  $EmailUserSelect -> execute($CertDN);
+
+  # XXX: EGI -> added ternary operator, was only CERTDN
+  $EmailUserSelect -> execute($ENV{AUTHENTICATE_UID} ? $ENV{AUTHENTICATE_UID} : $CertDN);
   
   my ($EmailUserID,$Verified) = $EmailUserSelect -> fetchrow_array;
 
