@@ -24,6 +24,6 @@
 
 %ImageNames = ();
 
-%ImageNames = ("EventIcon" => "datum_darker.gif");
+%ImageNames = ("EventIcon" => "datum_darker.gif", "Lock" => "lock-red.png", "Unlock" => "unlock-green.png" );
 
 1;
