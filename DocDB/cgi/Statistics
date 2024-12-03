@@ -147,7 +147,8 @@ my $NRevEvent_query = $dbh -> prepare("select COUNT(ConferenceID) from RevisionE
 my ($NRevisionEvents) = $NRevEvent_query -> fetchrow_array;
 
 my $EventsPerRev = sprintf "%5.2f",$NRevisionEvents/$NRevisions;
-my $DocPerEvent  = sprintf "%5.2f",$NDocuments/$NEvents*$EventsPerRev;
+# XXX: EGI -> Division by zero
+my $DocPerEvent  = ($NEvents*$EventsPerRev > 0) ? sprintf "%5.2f",$NDocuments/$NEvents*$EventsPerRev : "n/a";
 
 
 print "<tbody>\n";
