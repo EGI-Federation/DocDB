@@ -425,6 +425,12 @@ sub DocumentLink (%) {
 
 sub PrintDocNumber { # And type
   my ($DocRevID) = @_;
+  # XXX: EGI Add permalink
+  print "<dt>Permalink:</dt>";
+  print "<dd style=\"word-wrap: break-word;\">";
+  print "<a style=\"font-size: xx-small;\" href=\"${web_root}document/",$DocRevisions{$DocRevID}{DOCID},"\">","${web_root}document/",$DocRevisions{$DocRevID}{DOCID},"</a>";
+  print "</dd>\n";
+
   print "<dt>Document #:</dt>";
   print "<dd>";
   print (&FullDocumentID($DocRevisions{$DocRevID}{DOCID}));
